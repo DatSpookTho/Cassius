@@ -39,7 +39,7 @@ let commands = {
 	},
 	
 	sdsprite: 'dexsprite',
-	dexprite: function (target, room, user) {
+	dexsprite: function (target, room, user) {
 		if (room !== user && !user.hasRank(room, '+')) return;
 		let sd = target
 		room.say('/addhtmlbox <img src="' + Tools.sample(Tools.data.dexsprites.sd) + '" height=95, width=95>');
@@ -143,6 +143,12 @@ let commands = {
 		if (room.id !== 'scrabble') return;
 		if (room === user || !user.hasRank(room, '+')) return;
 		room.say('/tour end');
+	},
+	
+	tourdq: function (target, room, user) {
+		if (room.id !== 'scrabble') return;
+		if (room === user || !user.hasRank(room, '+')) return;
+		room.say('/tour dq ' + target);
 	},
    
     scrabtour: function (target, room, user) {
@@ -260,6 +266,7 @@ let commands = {
 		room.say("Ａｅｓｔｈｅｔｉｃ");
 	},
 	
+	zyg: 'strat',
 	strat: function (target, room, user) {
 		if (!user.hasRank(room, '+')) return;
 		if (room.id !== 'scrabble') return;
