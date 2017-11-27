@@ -9,7 +9,6 @@
 
 'use strict';
 
-/**@type {{[k: string]: Command | string}} */
 function getLB(word) {
 	word = Tools.toId(word);
 	if (word === 'scrabble') {
@@ -20,6 +19,7 @@ function getLB(word) {
 		return false;
 	}
 }
+/**@type {{[k: string]: Command | string}} */
 let commands = {
 	// Developer commands
 	js: 'eval',
@@ -32,19 +32,16 @@ let commands = {
 			this.say(e.name + ": " + e.message);
 		}
 	},
-	//SpookDex commands
-	gettype: function (target, room, user) {
-		if (room !== user && !user.hasRank(room, '+')) return;
-		room.say(Tools.data.pokedex.target.color);
-	},
-	
-	sdsprite: 'dexsprite',
-	dexsprite: function (target, room, user) {
-		if (room !== user && !user.hasRank(room, '+')) return;
-		let sd = target
-		room.say('/addhtmlbox <img src="' + Tools.sample(Tools.data.dexsprites.sd) + '" height=95, width=95>');
-	},
 
+	encrypt: function (target, user, room) {
+        if (!user.isDeveloper()) return;
+        return user.say("Encrypted message: " + Tools.encrypt(target));
+    },
+
+    decrypt: function (target, user, room) {
+        if (!user.isDeveloper()) return;
+        return user.say("Decrypted message: " + Tools.decrypt(target));
+    },
 
 	// Informational commands
 	about: function (target, room, user) {
@@ -73,16 +70,33 @@ let commands = {
 		room.say("/addhtmlbox <div>Welcome to Scrabble!<li> <a href='http://scrabble-ps.weebly.com'>PS Scrabble Website</a></li> <li><a href='https://en.crosswordsarena.com/'>Play Scrabble!</a></li></ul></div>");
 	},
 	
-	intro: function (target, room, user) {
-		if (!user.hasRank(room, '+')) return
-		if (room.id !== 'groupchat-snapeasy-spyfall') return;
-		room.say("**Welcome to Spyfall**! PS Spyfall Website: http://spyfallps.weebly.com/ Room Rules: http://spyfallps.weebly.com/room-rules.html Spyfall Official Games: http://spyfallps.weebly.com/spy-games.html Spyfall Unofficial Games: https://docs.google.com/document/d/1qloo_zEXzDjYFDEyAW0I6-xKAMgBEgCURA0IZot9c2I/edit");
-	},
-	
 	roomdesc: function (target, room, user) {
 		if (room.id !== 'scrabble') return;
 		if (!user.hasRank(room, '+')) return;
 		room.say("/addhtmlbox <div>Play Scrabble with friends, join Scrabble tournaments, and compete in the exciting new Scrabblemons metagame!</div>");
+	},
+	
+	timer: function (target, room, user) {
+		if (!user.hasRank(room, '+')) return;
+		if (target === "end") {
+			if (Games.isTimer ) {
+				clearTimeout(Games.timeout);
+				room.say("The timer has been ended.");
+				Games.isTimer = false;
+			} else {
+				room.say("There is no timer running!");
+			}
+			return;
+		}
+		let x = parseFloat(target);
+		if (!x || x > 300 || (x < 10 && x > 5) || x <= 0) return room.say("The timer must be between 10 seconds and 5 minutes.");
+		if (x < 10) x *= 60;
+		let minutes = Math.floor(x / 60);
+		let seconds = x % 60;
+		clearTimeout(Games.timeout);
+		room.say("Timer set for " + (minutes > 0 ? ((minutes) + " minute" + (minutes > 1 ? "s" : "")) + (seconds > 0 ? " and " : "") : "") + (seconds > 0 ? ((seconds) + " second" + (seconds > 1 ? "s" : "")) : "") + ".");
+		Games.timeout = setTimeout(() => Games.timer(room), x * 1000);
+		Games.isTimer = true;
 	},
 	
 	nt: function (target, room, user) {
@@ -144,12 +158,6 @@ let commands = {
 		if (room === user || !user.hasRank(room, '+')) return;
 		room.say('/tour end');
 	},
-	
-	tourdq: function (target, room, user) {
-		if (room.id !== 'scrabble') return;
-		if (room === user || !user.hasRank(room, '+')) return;
-		room.say('/tour dq ' + target);
-	},
    
     scrabtour: function (target, room, user) {
 		if (room.id !== 'scrabble') return;
@@ -195,7 +203,7 @@ let commands = {
 	
 	check: function (target, room, user) {
 		if (room !== user && !user.hasRank(room, '+')) return;
-		if (scrabwords.indexOf(target.toUpperCase()) !== -1) { this.say("__**" + target + "**__ is a valid word!"); }
+		if (scrabwords.indexOf(Tools.toId(target).toUpperCase()) !== -1) { this.say("__**" + target + "**__ is a valid word!"); }
 		else {
 			room.say("__**" + target + "**__ is NOT a valid word!");
 		}
@@ -266,7 +274,6 @@ let commands = {
 		room.say("Ａｅｓｔｈｅｔｉｃ");
 	},
 	
-	zyg: 'strat',
 	strat: function (target, room, user) {
 		if (!user.hasRank(room, '+')) return;
 		if (room.id !== 'scrabble') return;
@@ -358,46 +365,6 @@ let commands = {
 		target = split.slice().splice(1).join(",");
 		dd.addSecond(target);
 		room.say("Second place points awarded to **" + target.trim() + "** on the " + dd.name + " leaderboard.");	
-	},
-	third: 'thirds',
-	thirds: function (target, room, user) {
-		if (!target) return;
-		if (!user.hasRank(Rooms.get('scrabble'), '+')) return;
-		let split = target.split(",");
-		if (split.length < 2) {
-			return room.say("You must specify the leaderboard you are adding to");
-		}
-		let dd = getLB(split[0]);
-		if (!dd) {
-			return room.say("The valid leaderboards are Scrabble and Scrabblemons");
-		}
-		if (dd.name !== "Scrabble") {
-			return room.say("You can only add third place to the Scrabble leaderboard.");
-		}
-		target = split.slice().splice(1).join(",");
-		dd.addThird(target);
-		room.say("Third place awarded to **" + target.trim() + "** on the " + dd.name + " leaderboard.");
-	},
-	highscores: 'toppoints',
-	highscore: 'toppoints',
-	toppoint: 'toppoints',
-	toppoints: function (target, room, user) {
-		if (!target) return;
-		if (!user.hasRank(Rooms.get('scrabble'), '+')) return;
-		let split = target.split(",");
-		if (split.length < 2) {
-			
-		}
-		let dd = getLB(split[0]);
-		if (!dd) {
-			return room.say("The valid leaderboards are Scrabble and Scrabblemons");
-		}
-		if (dd.name !== "Scrabble") {
-			return room.say("You can only add toppoints to the Scrabble leaderboard.");
-		}
-		target = split.slice().splice(1).join(",");
-		dd.addTop(target);
-		room.say("High Scores awarded to **" + target.trim() + "** on the Scrabble leaderboard.");
 	},
 
 	part: 'participation',
@@ -606,10 +573,10 @@ let commands = {
 		let scrabmonslb = scrabmonlb.getSorted();
 		let str = "", i;
 		for (i = 0; i < scrabbleLB.length; i++) {
-			if (Tools.toId(scrabbleLB[i][5]) === targetID) break;
+			if (Tools.toId(scrabbleLB[i][3]) === targetID) break;
 		}
 		if (i !== scrabbleLB.length) {
-			user.say("**" + scrabbleLB[i][5] + "** is #" + (i + 1) + " on the Scrabble leaderboard with " + scrabbleLB[i][0] + " first place finishes, " + scrabbleLB[i][1] + " second place finishes, " + scrabbleLB[i][2] + " third place finishes, " + scrabbleLB[i][3] + " participations, and " + scrabbleLB[i][4] + " high-scores.");
+			user.say("**" + scrabbleLB[i][3] + "** is #" + (i + 1) + " on the Scrabble leaderboard with " + scrabbleLB[i][0] + " first place finishes, " + scrabbleLB[i][1] + " second place finishes, and " + scrabbleLB[i][2] + " participations.");
 		} else {
 			user.say("**" + targetName + "** does not have any points on the Scrabble leaderboard.");
 		}

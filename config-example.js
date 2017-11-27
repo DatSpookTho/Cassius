@@ -10,7 +10,7 @@
 'use strict';
 
 // The username and password that Cassius will use to login
-exports.username = 'Example Username';
+exports.username = 'Scrabble-E';
 // leave this blank if the username is unregistered
 exports.password = '';
 
@@ -20,7 +20,7 @@ exports.server = '';
 // Rooms that Cassius will attempt to join after logging in
 // example: exports.rooms = ['room1', 'room2', 'room3'];
 /**@type {Array<string>} */
-exports.rooms = [];
+exports.rooms = ['scrabble'];
 
 // Rooms where scripted games are enabled
 /**@type {Array<string>} */

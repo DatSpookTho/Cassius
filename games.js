@@ -102,6 +102,7 @@ class Game {
 		this.maxPoints = null;
 		/**@type {?Map<Player, boolean>} */
 		this.roundGuesses = null;
+		this.isTimer = false;
 	}
 
 	onSignups() {}
@@ -111,6 +112,11 @@ class Game {
 	onNextRound() {}
 
 	onEnd() {}
+	
+	timer(room) {
+	    room.say("**Time's up!**");
+		this.isTimer = false;
+	}
 
 	/**
 	 * @param {Map<Player, number>} winners
