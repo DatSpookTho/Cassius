@@ -19,6 +19,10 @@ function getLB(word) {
 		return false;
 	}
 }
+function timer(room) {
+    room.say("**Time's up!**");
+	Games.isTimer = false;
+}
 /**@type {{[k: string]: Command | string}} */
 let commands = {
 	// Developer commands
@@ -77,7 +81,7 @@ let commands = {
 	},
 	
 	timer: function (target, room, user) {
-		if (!user.hasRank(room, '+')) return;
+		if (room !== user && !user.hasRank(room, '+')) return;
 		if (target === "end") {
 			if (Games.isTimer ) {
 				clearTimeout(Games.timeout);
@@ -95,7 +99,7 @@ let commands = {
 		let seconds = x % 60;
 		clearTimeout(Games.timeout);
 		room.say("Timer set for " + (minutes > 0 ? ((minutes) + " minute" + (minutes > 1 ? "s" : "")) + (seconds > 0 ? " and " : "") : "") + (seconds > 0 ? ((seconds) + " second" + (seconds > 1 ? "s" : "")) : "") + ".");
-		Games.timeout = setTimeout(() => Games.timer(room), x * 1000);
+		Games.timeout = setTimeout(() => timer(room), x * 1000);
 		Games.isTimer = true;
 	},
 	

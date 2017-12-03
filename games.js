@@ -112,11 +112,6 @@ class Game {
 	onNextRound() {}
 
 	onEnd() {}
-	
-	timer(room) {
-	    room.say("**Time's up!**");
-		this.isTimer = false;
-	}
 
 	/**
 	 * @param {Map<Player, number>} winners
