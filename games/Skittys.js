@@ -25,7 +25,7 @@ for (let i in Tools.data.moves) {
 }
 
 
-class skittys extends Games.Game {
+class Skittys extends Games.Game {
 	constructor(room) {
 		super(room);
 		this.name = name;
@@ -80,11 +80,11 @@ class skittys extends Games.Game {
 		points += 1;
 		this.points.set(player, points);
 		if (points >= this.maxPoints) {
-			this.say("Correct! " + user.name + " wins the game! (Answer" + (this.answers.length > 1 ? "s" : "") + ": __" + this.answers.join(", ") + "__)");
+			this.say("Correct! " + player.name + " wins the game! (Answer" + (this.answers.length > 1 ? "s" : "") + ": __" + this.answers.join(", ") + "__)");
 			this.end();
 			return;
 		}
-		this.say("Correct! " + user.name + " advances to " + points + " point" + (points > 1 ? "s" : "") + ". (Answer" + (this.answers.length > 1 ? "s" : "") + ": __" + this.answers.join(", ") + "__)");
+		this.say("Correct! " + player.name + " advances to " + points + " point" + (points > 1 ? "s" : "") + ". (Answer" + (this.answers.length > 1 ? "s" : "") + ": __" + this.answers.join(", ") + "__)");
 		this.answers = null;
 		this.timeout = setTimeout(() => this.nextRound(), 5 * 1000);
 	}
@@ -99,8 +99,8 @@ exports.commands = {
 	"guess": "guess",
 	"g": "guess",
 };
-exports.aliases = ['oh'];
+exports.aliases = ['scc'];
 exports.variations = [
 ];
 exports.modes = ["Survival"];
-exports.game = skittys;
+exports.game = Skittys;
