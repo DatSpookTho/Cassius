@@ -10,12 +10,12 @@
 'use strict';
 
 // The username and password that Cassius will use to login
-exports.username = 'Example Username';
+exports.username = 'Waver-B';
 // leave this blank if the username is unregistered
-exports.password = '';
+exports.password = '12349';
 
 // The server address to which Cassius will connect
-exports.server = '';
+exports.server = 'sim.smogon.com';
 
 // The avatar that Cassius will use
 exports.avatar = '';
@@ -26,7 +26,7 @@ exports.guide = '';
 // Rooms that Cassius will attempt to join after logging in
 // example: exports.rooms = ['room1', 'room2', 'room3'];
 /**@type {Array<string>} */
-exports.rooms = [];
+exports.rooms = ['botdev'];
 
 // Rooms where scripted games are enabled
 /**@type {Array<string>} */
@@ -40,7 +40,7 @@ exports.tournaments = [];
 exports.defaultTournamentCap = 0;
 
 // The character that determines which messages are read as commands
-exports.commandCharacter = '.';
+exports.commandCharacter = '-';
 
 // Symbols and rankings for the server's user groups
 exports.groups = {
@@ -63,7 +63,7 @@ exports.bannedWords = [];
 // Userids of those who have debug access to Cassius
 // example: exports.developers = ['devuser1', 'devuser2', 'devuser3'];
 /**@type {Array<string>} */
-exports.developers = [];
+exports.developers = ["SparkyHeliolisk"];
 
 // Custom functions
 /**@type {?Function} */
